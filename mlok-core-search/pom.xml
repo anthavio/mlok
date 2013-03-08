@@ -41,7 +41,7 @@
 							<args>
 								<arg>-XtoString</arg>
 								<!--
-								<arg>-XtoString-toStringStrategyClass=com.nature.mlok.JsonToStringStrategy</arg>
+								<arg>-XtoString-toStringStrategyClass=com.anthavio.mlok.JsonToStringStrategy</arg>
 								-->
 							</args>
 						</configuration>

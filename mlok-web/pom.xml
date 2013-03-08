@@ -79,7 +79,7 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>com.nature.maven</groupId>
+			<groupId>com.anthavio.maven</groupId>
 			<artifactId>jetty-deps-all</artifactId>
 			<type>pom</type>
 			<scope>provided</scope>
