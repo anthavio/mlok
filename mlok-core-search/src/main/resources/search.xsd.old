@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns="http://marklogic.com/appservices/search"
+	xmlns:ms="http://marklogic.com/appservices/search"
+	targetNamespace="http://marklogic.com/appservices/search"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	
+	<!-- 
+		http://docs.marklogic.com/5.0/guide/search-dev/search-api#chapter
+		http://docs.marklogic.com/5.0/search:search
+		
+		http://docs.marklogic.com/search:search
+	-->
+	
+	<xs:element name="response">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="result" type="result" maxOccurs="unbounded"/>
+				<xs:element name="qtext" type="xs:string"/>
+				<xs:element name="metrics" type="metrics"/>
+			</xs:sequence>
+			<xs:attribute name="total" type="xs:int"/>
+			<xs:attribute name="start" type="xs:int"/>
+			<xs:attribute name="page-length" type="xs:int"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="result">
+		<xs:sequence>
+			<xs:element name="snippet" type="snippet"/>
+		</xs:sequence>
+		<xs:attribute name="index" type="xs:int"/>
+		<xs:attribute name="uri" type="xs:string"/>
+		<xs:attribute name="path" type="xs:string"/>
+		<xs:attribute name="score" type="xs:int"/>
+		<xs:attribute name="confidence" type="xs:decimal"/>
+		<xs:attribute name="fitness" type="xs:decimal"/>
+	</xs:complexType>
+	
+	<xs:complexType name="snippet">
+		<xs:sequence>
+			<xs:element name="match" maxOccurs="unbounded">
+				<xs:complexType mixed="true">
+					<xs:sequence>
+						<xs:element name="highlight" type="xs:string"/>
+					</xs:sequence>
+					<xs:attribute name="path" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="metrics">
+		<xs:sequence>
+			<xs:element name="query-resolution-time" type="xs:string"/>
+			<xs:element name="facet-resolution-time" type="xs:string"/>
+			<xs:element name="snippet-resolution-time" type="xs:string"/>
+			<xs:element name="total-time" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:element name="options">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="constraint" type="constraint" maxOccurs="unbounded"/>
+				<xs:element name="suggestion-source" type="suggestion-source" maxOccurs="unbounded"/>
+				<xs:element name="default-suggestion-source" type="suggestion-source"/>
+				<xs:element name="operator" type="operator" maxOccurs="unbounded"/>
+				<xs:element name="return-constraints" type="xs:boolean"/>
+				<xs:element name="return-facets" type="xs:boolean"/>
+				<xs:element name="return-metrics" type="xs:boolean"/>
+				<xs:element name="return-qtext" type="xs:boolean"/>
+				<xs:element name="return-query" type="xs:boolean"/>
+				<xs:element name="return-results" type="xs:boolean"/>
+				<xs:element name="return-similar" type="xs:boolean"/>
+				<xs:element name="searchable-expression" type="xs:string"/>
+				<xs:element name="fragment-scope" type="fragment-scope"/>
+				<xs:element name="transform-results" type="transform-results"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="transform-results">
+		<xs:sequence>
+			<xs:element name="per-match-tokens" type="xs:integer"/>
+			<xs:element name="max-matches" type="xs:integer"/>
+			<xs:element name="max-snippet-chars" type="xs:integer"/>
+			<xs:element name="preferred-elements">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="element" type="ns-name" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attributeGroup ref="apply-ns-at"/>
+	</xs:complexType>
+	
+	<xs:attributeGroup name="apply-ns-at">
+		<xs:attribute name="apply" type="apply"/>
+		<xs:attribute name="ns" type="xs:string"/>
+		<xs:attribute name="at" type="xs:string"/>
+	</xs:attributeGroup>
+	
+	<xs:simpleType name="apply">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="snippet"/>
+			<xs:enumeration value="raw"/>
+			<xs:enumeration value="empty-snippet"/>
+			<xs:enumeration value="metadata-snippet"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="fragment-scope">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="documents"/>
+			<xs:enumeration value="properties"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:complexType name="suggestion-source">
+		<xs:complexContent>
+			<xs:extension base="constraint-source">
+				<xs:sequence>
+					<xs:element name="suggestion-option" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="ref"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="constraint">
+		<xs:complexContent>
+			<xs:extension base="constraint-source">
+				<xs:attribute name="name" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	
+	<xs:complexType name="constraint-source">
+		<xs:choice>
+			<xs:element name="value">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="element" type="ns-name"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="word">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="element" type="ns-name"/>
+						<xs:element name="field">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+					<xs:attribute name="collation" type="xs:anyURI"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="collection" type="collection"/>
+			<xs:element name="range" type="range" />
+			<xs:element name="element-query" type="ns-name"/>
+			<xs:element name="properties">
+			</xs:element>
+			<xs:element name="geo-attr-pair">
+			</xs:element>
+			<xs:element name="geo-elem-pair">
+			</xs:element>
+			<xs:element name="geo-elem">
+			</xs:element>
+			<xs:element name="custom" type="custom"/>
+		</xs:choice>
+	</xs:complexType>
+	
+	<xs:complexType name="ns-name">
+		<xs:attribute name="ns" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="custom">
+		<xs:sequence>
+			<xs:element name="parse">
+				<xs:complexType>
+					<xs:attributeGroup ref="apply-ns-at"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="start-facet">
+				<xs:complexType>
+					<xs:attributeGroup ref="apply-ns-at"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="finish-facet">
+				<xs:complexType>
+					<xs:attributeGroup ref="apply-ns-at"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="facet" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="collection">
+		<xs:attribute name="prefix" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="range">
+		<xs:sequence>
+			<!-- computed-bucket -->
+			<xs:element name="bucket" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute name="lt" type="xs:string" use="required"/>
+					<xs:attribute name="ge" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="facet-option" type="xs:string"/>
+			<xs:element name="attribute" type="ns-name"/>
+			<xs:element name="element" type="ns-name"/>
+			<xs:element name="fragment-scope" type="fragment-scope"/>
+		</xs:sequence>
+		<xs:attribute name="collation" type="xs:anyURI" use="optional"/>
+		<xs:attribute name="type" type="xs:string" use="required"/>
+		<xs:attribute name="facet" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="operator">
+		<xs:sequence>
+			<xs:element name="state" type="state" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="state">
+		<xs:sequence>
+			<xs:element name="additional-query"/>
+			<xs:element name="debug"/>
+			<xs:element name="forest"/>
+			<xs:element name="page-length"/>
+			<xs:element name="quality-weight"/>
+			<xs:element name="searchable-expression" type="xs:string" />
+			<xs:element name="sort-order" type="sort-order" maxOccurs="unbounded"></xs:element>
+			<xs:element name="transform-results"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="sort-order">
+		<xs:choice>
+			<xs:element name="score"/>
+			<xs:element name="atribute" type="ns-name"/>
+			<xs:element name="element" type="ns-name"/>
+		</xs:choice>
+		<xs:attribute name="direction" type="direction"/>
+		<xs:attribute name="type" type="xs:string"/>
+		<xs:attribute name="collation" type="xs:anyURI"/>
+	</xs:complexType>
+	
+	<xs:simpleType name="direction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ascending"/>
+			<xs:enumeration value="descending"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	
+</xs:schema>

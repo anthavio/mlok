@@ -1,0 +1,1514 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2002-2012 MarkLogic Corporation.  All Rights Reserved. -->
+<xs:schema targetNamespace="http://marklogic.com/cts"
+ xsi:schemaLocation="http://www.w3.org/2001/XMLSchema XMLSchema.xsd"
+ xmlns="http://marklogic.com/cts"
+ xmlns:cts="http://marklogic.com/cts"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:train="cts:train"
+ xmlns:dt="cts:distinctive-terms"
+ xmlns:cluster="cts:cluster"
+ elementFormDefault="qualified">
+<!--
+  <xs:import namespace="cts:train"
+             schemaLocation="cts-train.xsd"/>
+  <xs:import namespace="cts:distinctive-terms"
+             schemaLocation="cts-distinctive-terms.xsd"/>
+  <xs:import namespace="cts:cluster"
+             schemaLocation="cts-cluster.xsd"/>
+-->
+  <xs:complexType name="annotation" mixed="true">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:annotation.  This can be used to hold anything
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:restriction base="xs:anyType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:any processContents="lax" namespace="##other"/>
+        </xs:sequence>
+        <xs:anyAttribute processContents="lax"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+ 
+  <xs:element name="annotation" type="annotation">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:annotation for comments or extra content on a query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="registered-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:registered-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="id" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="registered-query" type="registered-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:registered-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:simpleType name="id">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:unsignedLong">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="id" type="id">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:simpleType name="option">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="key">
+    <xs:annotation>
+      <xs:documentation>
+        An index term key.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:unsignedLong">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="option" type="option">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:simpleType name="weight">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:double">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="and-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:and-query. 
+      Empty means search everything.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="query" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="and-query" type="and-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:and-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="or-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:or-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="query" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="or-query" type="or-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:or-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="and-not-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:and-not-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="positive"/>
+          <xs:element ref="negative"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="and-not-query" type="and-not-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:-and-not-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="positive">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:positive-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:all>
+      <xs:element ref="query"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:element name="positive" type="positive">
+    <xs:annotation>
+      <xs:documentation>
+      The positive query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="negative">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:negative-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:all>
+      <xs:element ref="query"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:element name="negative" type="negative">
+    <xs:annotation>
+      <xs:documentation>
+      The positive query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="not-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:not-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="query" minOccurs="1" maxOccurs="1"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="not-query" type="not-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:not-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="key" type="key">
+    <xs:annotation>
+      <xs:documentation>
+      The key for a cts:term-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="term-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:term-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="key" minOccurs="0" maxOccurs="unbounded"/>    
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="term-query" type="term-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:term-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="word-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:word-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="text" minOccurs="0" maxOccurs="unbounded"/>    
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="word-query" type="word-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:word-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:simpleType name="text">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="text" type="text">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="element-range-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-range-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="value" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="operator" type="operator" use="required"/>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-range-query" type="element-range-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-range-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="field-range-query">
+    <xs:annotation>
+      <xs:documentation>
+        A cts:field-range-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="field" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="value" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="operator" type="operator" use="required"/>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="field-range-query" type="field-range-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+        The cts:field-range-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:simpleType name="qname">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:QName">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="element" type="qname">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <!-- 
+     Really: this can only be simple types, but the only way to express that
+     validly in XML Schema is to have an explicit union listing all the
+     primitive simple types in some order.
+  -->
+  <xs:complexType name="value">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:restriction base="xs:anyType">
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="value" type="value">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:simpleType name="operator">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="&lt;"/>
+      <xs:enumeration value="&lt;="/>
+      <xs:enumeration value="&gt;"/>
+      <xs:enumeration value="&gt;="/>
+      <xs:enumeration value="="/>
+      <xs:enumeration value="!="/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="element-value-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-value-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="text" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-value-query" type="element-value-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-value-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="element-word-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-word-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="text" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-word-query" type="element-word-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-word-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="field-word-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:field-word-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="field" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="text" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="field-word-query" type="field-word-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:field-word-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:simpleType name="field">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="field-value-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:field-value-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="field" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="text" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="field-value-query" type="field-value-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:field-value-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="field" type="field">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="element-attribute-range-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-attribute-value-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="attribute" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="value" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="operator" type="operator" use="required"/>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-attribute-range-query" type="element-attribute-range-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-attribute-range-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="element-attribute-value-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-attribute-value-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="attribute" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="text" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-attribute-value-query" type="element-attribute-value-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-attribute-value-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="element-attribute-word-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-attribute-word-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="attribute" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="text" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-attribute-word-query" type="element-attribute-word-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-attribute-word-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+<!--
+  <xs:complexType name="similar-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:similar-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="node" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="dt:options" minOccurs="0" maxOccurs="1"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="similar-query" type="similar-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:similar-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+-->
+  <xs:element name="node">
+    <xs:annotation>
+      <xs:documentation>
+      Wrapper for any node.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any processContents="lax"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="near-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:near-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="query" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="distance" type="distance" use="optional"/>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="distance">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:double">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="near-query" type="near-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:near-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="element-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="query" minOccurs="1" maxOccurs="1"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-query" type="element-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="document-fragment-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:document-fragment-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="query" minOccurs="1" maxOccurs="1"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="document-fragment-query" type="document-fragment-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:document-fragment-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="properties-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:properties-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="query" minOccurs="1" maxOccurs="1"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="properties-query" type="properties-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:properties-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="locks-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:locks-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="query" minOccurs="1" maxOccurs="1"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="locks-query" type="locks-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:locks-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="document-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:document-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="uri" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="document-query" type="document-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:document-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:simpleType name="uri">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="uri" type="uri">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="collection-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:collection-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="uri" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="collection-query" type="collection-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:collection-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="directory-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:directory-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="uri" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="depth" type="depth" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="directory-query" type="directory-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:directory-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:simpleType name="depth">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="0"/>
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="infinity"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="reverse-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:reverse-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="node" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="reverse-query" type="reverse-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:reverse-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="parent" type="qname">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="child" type="qname">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="attribute" type="qname">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="latitude" type="qname">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="longitude" type="qname">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <!-- cts:region already built-in -->
+  <xs:simpleType name="region">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:element name="region" type="region">
+    <xs:annotation>
+      <xs:documentation>
+      A geospatial region.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <!-- cts:point type already built-in -->
+  <xs:simpleType name="point">
+    <xs:restriction base="region"/>
+  </xs:simpleType>
+
+  <xs:element name="point" type="point" substitutionGroup="region">
+    <xs:annotation>
+      <xs:documentation>
+      A geospatial point.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <!-- cts:box type already built-in -->
+  <xs:simpleType name="box">
+    <xs:restriction base="region"/>
+  </xs:simpleType>
+
+  <xs:element name="box" type="box" substitutionGroup="region">
+    <xs:annotation>
+      <xs:documentation>
+      A geospatial box.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <!-- cts:circle type already built-in -->
+  <xs:simpleType name="circle">
+    <xs:restriction base="region"/>
+  </xs:simpleType>
+
+  <xs:element name="circle" type="circle" substitutionGroup="region">
+    <xs:annotation>
+      <xs:documentation>
+      A geospatial circle.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <!-- cts:polygon type already built-in -->
+  <xs:simpleType name="polygon">
+    <xs:restriction base="region"/>
+  </xs:simpleType>
+
+  <xs:element name="polygon" type="polygon" substitutionGroup="region">
+    <xs:annotation>
+      <xs:documentation>
+      A geospatial polygon.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="element-geospatial-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-geospatial-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="region" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-geospatial-query" type="element-geospatial-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-geospatial-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="element-child-geospatial-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-child-geospatial-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="child" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="region" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-child-geospatial-query" type="element-child-geospatial-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-child-geospatial-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="element-pair-geospatial-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-pair-geospatial-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="latitude" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="longitude" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="region" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-pair-geospatial-query" type="element-pair-geospatial-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-pair-geospatial-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="element-attribute-pair-geospatial-query">
+    <xs:annotation>
+      <xs:documentation>
+      A cts:element-attribute-pair-geospatial-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="query">
+        <xs:sequence>
+          <xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="latitude" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="longitude" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="region" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="option" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="annotation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="weight" type="weight" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="element-attribute-pair-geospatial-query" type="element-attribute-pair-geospatial-query" substitutionGroup="query">
+    <xs:annotation>
+      <xs:documentation>
+      The cts:element-attribute-pair-geospatial-query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="query">
+    <xs:annotation>
+      <xs:documentation>
+      Any query.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:restriction base="xs:anyType">
+        <xs:sequence/>
+        <xs:anyAttribute processContents="lax"/> 
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="query" type="query" abstract="true">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+<!--
+  <xs:element name="classifier">
+    <xs:annotation>
+      <xs:documentation>
+      An XML representation of a classifier, as produced by cts:train.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="train:options"/>
+        <xs:element name="class" type="cts:classifier-class" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+-->
+  <xs:element name="term">
+    <xs:annotation>
+      <xs:documentation>
+      An index term. The 'id' attribute is the internal identifier for the 
+      term; it is stable across queries. The 'val' attribute is the weight for
+      this term in the class.
+
+      The fitness, confidence, and query are reported when the term is
+      reported from cts:distinctive-terms.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="query" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:unsignedLong" use="required"/>
+      <xs:attribute name="val" type="xs:double" use="required"/>
+      <xs:attribute name="score" type="xs:double" use="optional"/>
+      <xs:attribute name="fitness" type="xs:double" use="optional"/>
+      <xs:attribute name="confidence" type="xs:double" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="doc">
+    <xs:annotation>
+      <xs:documentation>
+      A support vector. The 'id' attribute is the internal identifier for the
+      node from the training set; it is stable across queries only for nodes
+      in the database. The 'val' attribute is the weight given to this
+      support vector in the class and the 'err' attribute is an estimate of the
+      error for this vector.  
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:unsignedLong" use="required"/>
+      <xs:attribute name="val" type="xs:double" use="required"/>
+      <xs:attribute name="err" type="xs:double" use="optional"/>
+      <xs:attribute name="name" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="label">
+    <xs:annotation>
+      <xs:documentation>
+      The labelling for a node: which classes the node belongs to. This is
+      both the input to cts:train and the output from cts:classify.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="class" type="cts:label-class" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="thresholds">
+    <xs:annotation>
+      <xs:documentation>
+      The output from cts:thresholds: the calculated best thresholds for each
+      class, with associated precision, recall, and f-measure.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="class" type="cts:threshold-class" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:complexType name="classifier-class">
+    <xs:annotation> 
+      <xs:documentation>
+      The representation of a class in the classifier. Classes come in two
+      forms, depending on the kind of classifier used: sets of weighted terms
+      or sets of weighted support vectors.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+       <xs:element ref="cts:term" minOccurs="0" maxOccurs="unbounded"/>
+       <xs:element ref="cts:doc" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="offset" type="xs:double" use="required"/>
+  </xs:complexType>
+  
+  <xs:complexType name="label-class">
+    <xs:annotation>
+      <xs:documentation>
+      Identification of a class for labelling. For training, positive values
+      mean membership in the class and negative values mean non-membership
+      (negative training examples).  For classification, thresholds should be
+      applied to determine actual class membership.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="val" type="xs:double" use="optional"/>
+  </xs:complexType>
+  
+  <xs:complexType name="threshold-class">
+    <xs:annotation>
+      <xs:documentation>
+      Calculated threshold information for a class. The attribute 'threshold'
+      is the threshold that provides the best f-measure; the attributes
+      'precision', 'recall', and 'f' record the precision, recall, and f-measure
+      given that threshold. The attribute 'count' is a count of the number of
+      instances of the class used in the computations.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="threshold" type="xs:double" use="required"/>
+    <xs:attribute name="precision" type="xs:double" use="required"/>
+    <xs:attribute name="recall" type="xs:double" use="required"/>
+    <xs:attribute name="f" type="xs:double" use="required"/>
+    <xs:attribute name="count" type="xs:integer" use="required"/>
+  </xs:complexType>
+  
+  <xs:complexType name="co-occurrence">
+    <xs:sequence>
+      <xs:element ref="value"/>
+      <xs:element ref="value"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="co-occurrence" type="co-occurrence"/>
+
+  <xs:element name="minimum" type="value">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="maximum" type="value">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="lower-bound" type="value">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="upper-bound" type="value">
+    <xs:annotation>
+      <xs:documentation>
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="range">
+    <xs:sequence>
+      <xs:element ref="minimum" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="maximum" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="lower-bound" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="upper-bound" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="range" type="range"/>
+<!--
+  <xs:element name="clustering">
+    <xs:annotation>
+      <xs:documentation>
+        The clutering report.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:complexType>
+     <xs:sequence>
+        <xs:element ref="cluster" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="cluster:options"/>
+     </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="cluster" type="cluster">
+    <xs:annotation>
+      <xs:documentation>
+        The clustering report of one cluster.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+  </xs:element>
+  
+  <xs:simpleType name="nodes">
+    <xs:list itemType="xs:unsignedInt"/>
+  </xs:simpleType> 
+    
+  <xs:complexType name="cluster">
+    <xs:annotation>
+      <xs:documentation>
+      One cluster from a clutering.
+      </xs:documentation>
+      <xs:appinfo/>
+    </xs:annotation>
+    <xs:sequence>
+       <xs:element ref="cts:term" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:unsignedLong" use="required"/>
+    <xs:attribute name="parent-id" type="xs:unsignedLong" use="optional"/>
+    <xs:attribute name="label" type="xs:string" use="required"/>
+    <xs:attribute name="count" type="xs:unsignedInt" use="required"/>
+    <xs:attribute name="nodes" type="nodes" use="optional"/>
+  </xs:complexType>
+--> 
+</xs:schema>

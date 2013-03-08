@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns="http://nature.com/marklogic/cts"
+	xmlns:mc="http://nature.com/marklogic/cts"
+	targetNamespace="http://nature.com/marklogic/cts"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	
+	<!-- http://docs.marklogic.com/5.0/guide/search-dev/cts_query#chapter -->
+	
+	<xs:element name="query">
+		<xs:complexType>
+			
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
