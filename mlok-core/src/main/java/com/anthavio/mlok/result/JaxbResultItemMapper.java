@@ -43,6 +43,7 @@ public class JaxbResultItemMapper<T> implements XccResultItemMapper<T> {
 			JAXBContext jaxbContext = cache.get(resultType);
 			if (jaxbContext == null) {
 				jaxbContext = JAXBContext.newInstance(resultType);
+				cache.put(resultType, jaxbContext);
 			}
 			this.jaxbContext = jaxbContext;
 
