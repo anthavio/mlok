@@ -22,6 +22,7 @@ import com.marklogic.xcc.exceptions.XccException;
  */
 public class JaxbResultItemMapper<T> implements XccResultItemMapper<T> {
 
+	//primitive cache to save us introspection during JAXBContext.newInstance(class)
 	private static Map<Class<?>, JAXBContext> cache = new HashMap<Class<?>, JAXBContext>();
 
 	private final Class<T> resultType;
