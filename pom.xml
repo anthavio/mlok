@@ -22,8 +22,8 @@
 	</modules>
 	
 	<properties>
-		<sjf4j.version>1.7.2</sjf4j.version>
-		<logback.version>1.0.9</logback.version>
+		<sjf4j.version>1.7.5</sjf4j.version>
+		<logback.version>1.0.11</logback.version>
 		<spring.version>3.2.1.RELEASE</spring.version>
 		<jetty.version>6.1.26</jetty.version>
 	</properties>
