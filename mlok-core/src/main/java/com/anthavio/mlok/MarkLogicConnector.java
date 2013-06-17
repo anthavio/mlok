@@ -1,5 +1,6 @@
 package com.anthavio.mlok;
 
+import java.io.Closeable;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Array;
@@ -54,7 +55,7 @@ import com.marklogic.xcc.types.XdmVariable;
  * @author martin.vanek
  *
  */
-public class MarkLogicConnector {
+public class MarkLogicConnector implements Closeable {
 
 	public enum NullHandling {
 		THROW_EXCEPTION, //be mean
@@ -64,7 +65,9 @@ public class MarkLogicConnector {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private ContentSource contentSource;
+	private final ContentSource contentSource;
+
+	private final boolean createdContentSource;
 
 	private RequestOptions defaultOptions = new RequestOptions();
 
@@ -79,6 +82,7 @@ public class MarkLogicConnector {
 	public MarkLogicConnector(URI uri) {
 		try {
 			this.contentSource = ContentSourceFactory.newContentSource(uri);
+			this.createdContentSource = true;
 		} catch (XccConfigException xcx) {
 			throw new UnhandledException(xcx);
 		}
@@ -87,12 +91,21 @@ public class MarkLogicConnector {
 
 	public MarkLogicConnector(String host, int port, String username, String password, String contentBase) {
 		this.contentSource = ContentSourceFactory.newContentSource(host, port, username, password, contentBase);
+		this.createdContentSource = true;
 		this.defaultOptions.setCacheResult(false);
 	}
 
 	public MarkLogicConnector(ContentSource contentSource) {
 		this.contentSource = contentSource;
+		this.createdContentSource = false;
 		this.defaultOptions.setCacheResult(false);
+	}
+
+	public void close() {
+		if (this.createdContentSource) {
+			//maybe some try/catch...
+			this.contentSource.getConnectionProvider().shutdown(null);
+		}
 	}
 
 	public <T> T execute(XccSessionCallback<T> action) {
@@ -704,10 +717,6 @@ public class MarkLogicConnector {
 
 	public ContentSource getContentSource() {
 		return contentSource;
-	}
-
-	public void setContentSource(ContentSource contentSource) {
-		this.contentSource = contentSource;
 	}
 
 	public boolean getStreamResult() {

@@ -6,6 +6,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.anthavio.mlok.LibraryModule;
 import com.marklogic.xcc.types.ValueType;
@@ -21,7 +25,12 @@ import com.marklogic.xcc.types.XdmVariable;
 public class XccAdhocQuery {
 
 	public static enum XqueryVersion {
-		V10ML("xquery version '1.0-ml';");
+		//XQuery version 1.0, with MarkLogic extensions. This is the preferred version of XQuery beginning with release 4.0.
+		V10ML("xquery version '1.0-ml';"),
+		//The legacy MarkLogic XQuery version. This was the only XQuery version available on MarkLogic Server 3.2 and earlier.
+		V09ML("xquery version '0.9-ml';"),
+		//Strict XQuery version 1.0. This XQuery version complies as closely as possible with the published XQuery 1.0 specification.
+		V10("xquery version '1.0';");
 
 		private String value;
 
@@ -41,6 +50,8 @@ public class XccAdhocQuery {
 	private Map<URI, LibraryModule> modules = new HashMap<URI, LibraryModule>();
 
 	private Map<XName, XdmVariable> variables = new HashMap<XName, XdmVariable>();
+
+	private Map<String, String> namespaces = new HashMap<String, String>();
 
 	private List<XccFunction> functions;
 
@@ -76,7 +87,7 @@ public class XccAdhocQuery {
 
 	public XccAdhocQuery addVariable(XdmVariable variable) {
 		if (variable == null) {
-			throw new IllegalArgumentException("variable is null");
+			throw new IllegalArgumentException("Null XdmVariable");
 		}
 		if (variables.get(variable.getName()) != null) {
 			throw new IllegalArgumentException("Global variable already declared " + variables.get(variable.getName()));
@@ -86,10 +97,30 @@ public class XccAdhocQuery {
 	}
 
 	public XccAdhocQuery addFunction(XccFunction function) {
+		if (function == null) {
+			throw new IllegalArgumentException("Null XccFunction");
+		}
 		if (functions == null) {
 			functions = new ArrayList<XccFunction>();
 		}
 		functions.add(function);
+		return this;
+	}
+
+	/**
+	 * declare namespace prefix = 'uri';
+	 */
+	public XccAdhocQuery addNamespace(String prefix, String uri) {
+		if (StringUtils.isBlank(prefix)) {
+			throw new IllegalArgumentException("Blank prefix");
+		}
+		if (StringUtils.isBlank(uri)) {
+			throw new IllegalArgumentException("Blank uri");
+		}
+		if (this.namespaces.get(prefix) != null) {
+			throw new IllegalArgumentException("Prefix already added " + prefix);
+		}
+		this.namespaces.put(prefix, uri);
 		return this;
 	}
 
@@ -109,6 +140,18 @@ public class XccAdhocQuery {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append(version.getValue()).append('\n');
+
+		if (namespaces != null && namespaces.size() != 0) {
+			Set<Entry<String, String>> entrySet = namespaces.entrySet();
+			for (Entry<String, String> entry : entrySet) {
+				//declare namespace meta = 'http://nature.com/meta';
+				sb.append("declare namespace ");
+				sb.append(entry.getKey());
+				sb.append(" = '");
+				sb.append(entry.getValue());
+				sb.append("';\n");
+			}
+		}
 
 		if (modules != null && modules.size() != 0) {
 			for (LibraryModule module : modules.values()) {
