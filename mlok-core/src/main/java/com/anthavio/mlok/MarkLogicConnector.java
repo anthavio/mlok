@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Array;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.Session;
 import com.marklogic.xcc.exceptions.RequestException;
 import com.marklogic.xcc.exceptions.RequestPermissionException;
+import com.marklogic.xcc.exceptions.ServerConnectionException;
 import com.marklogic.xcc.exceptions.UnimplementedFeatureException;
 import com.marklogic.xcc.exceptions.XQueryException;
 import com.marklogic.xcc.exceptions.XccConfigException;
@@ -86,19 +88,28 @@ public class MarkLogicConnector implements Closeable {
 		} catch (XccConfigException xcx) {
 			throw new UnhandledException(xcx);
 		}
-		this.defaultOptions.setCacheResult(false);
+		defaultOptions();
 	}
 
 	public MarkLogicConnector(String host, int port, String username, String password, String contentBase) {
 		this.contentSource = ContentSourceFactory.newContentSource(host, port, username, password, contentBase);
+		this.contentSource.setAuthenticationPreemptive(true);
 		this.createdContentSource = true;
-		this.defaultOptions.setCacheResult(false);
+		defaultOptions();
 	}
 
 	public MarkLogicConnector(ContentSource contentSource) {
 		this.contentSource = contentSource;
 		this.createdContentSource = false;
+		defaultOptions();
+	}
+
+	private void defaultOptions() {
 		this.defaultOptions.setCacheResult(false);
+		this.defaultOptions.setMaxAutoRetry(0);
+		// java.net.ConnectException: Operation timed out (75 seconds) - cannot be controlled  
+		this.defaultOptions.setTimeoutMillis(10000); //millis - Socket SoTimeout
+		this.defaultOptions.setRequestTimeLimit(10); //seconds - Xcc Request timeout
 	}
 
 	public void close() {
@@ -110,6 +121,7 @@ public class MarkLogicConnector implements Closeable {
 
 	public <T> T execute(XccSessionCallback<T> action) {
 		Session session = this.contentSource.newSession();
+		session.setDefaultRequestOptions(defaultOptions);
 		try {
 			return action.doInSession(session);
 		} catch (XQueryException xqx) {
@@ -125,6 +137,8 @@ public class MarkLogicConnector implements Closeable {
 			throw new DataRetrievalFailureException(xqx.getFormatString(), xqx);
 		} catch (RequestPermissionException rpx) {
 			throw new PermissionDeniedDataAccessException(rpx.getMessage(), rpx);
+		} catch (ServerConnectionException scx) {
+			throw new DataRetrievalFailureException(String.valueOf(scx));
 		} catch (RequestException rqx) {
 			throw new DataRetrievalFailureException(rqx.getMessage(), rqx);
 		} catch (XccException xcx) {
@@ -446,6 +460,7 @@ public class MarkLogicConnector implements Closeable {
 		XccSessionCallback<Void> action = new XccSessionCallback<Void>() {
 			@Override
 			public Void doInSession(Session session) throws XccException {
+				session.setDefaultRequestOptions(defaultOptions);
 				session.insertContent(content);
 				return null;
 			}
@@ -589,6 +604,7 @@ public class MarkLogicConnector implements Closeable {
 			throw new IllegalArgumentException("Module URI is blank");
 		}
 		Session session = contentSource.newSession();
+		session.setDefaultRequestOptions(defaultOptions);
 		ModuleInvoke moduleInvoke = session.newModuleInvoke(moduleUri);
 		setExternalVariables(moduleInvoke, parameters);
 		//
@@ -698,16 +714,15 @@ public class MarkLogicConnector implements Closeable {
 	}
 
 	private ResultSequence invoke(Request request, Session session) {
-		request.setOptions(defaultOptions);
 		try {
 			ResultSequence result = session.submitRequest(request);
 			return result;
 		} catch (RequestException rx) {
 			throw new UnhandledException(rx);
 		} finally {
-			if (defaultOptions.getCacheResult()) { //close only when returning string
+			if (defaultOptions.getCacheResult()) { //close only when returning cached result
 				try {
-					session.close();
+					session.close();//XXX should not close session passed as argument
 				} catch (Exception x) {
 					log.warn("Exception while closing session", x);
 				}
@@ -748,6 +763,21 @@ public class MarkLogicConnector implements Closeable {
 		@Override
 		public void processItem(ResultItem item) throws XccException {
 			//do nothing
+		}
+	};
+
+	/**
+	 * Return List of ResultItems (Caching must be turned on to make this work)
+	 */
+	private static final XccResultSequenceExtractor<List<ResultItem>> RETURN_ITEMS_EXTRACTOR = new XccResultSequenceExtractor<List<ResultItem>>() {
+
+		@Override
+		public List<ResultItem> extract(ResultSequence resultSequence) throws XccException, DataAccessException {
+			List<ResultItem> retval = new ArrayList<ResultItem>(resultSequence.size());
+			while (resultSequence.hasNext()) {
+				retval.add(resultSequence.next());
+			}
+			return retval;
 		}
 	};
 

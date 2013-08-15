@@ -96,6 +96,14 @@ public class XccMappers {
 		}
 	}
 
+	private static final XccResultItemMapper<ResultItem> RESULT_ITEM_MAPPER = new XccResultItemMapper<ResultItem>() {
+		@Override
+		public ResultItem mapItem(ResultItem resultItem) {
+			return resultItem;
+		}
+
+	};
+
 	private static final XccResultItemMapper<XdmItem> XDM_ITEM_MAPPER = new XccResultItemMapper<XdmItem>() {
 		@Override
 		public XdmItem mapItem(ResultItem resultItem) {
@@ -317,6 +325,7 @@ public class XccMappers {
 		m.put(Reader.class, READER_MAPPER);
 		m.put(Boolean.class, BOOLEAN_MAPPER);
 		m.put(String.class, STRING_MAPPER);
+		m.put(ResultItem.class, RESULT_ITEM_MAPPER);
 		m.put(URI.class, URI_MAPPER);
 		m.put(XdmAtomic.class, XDM_ITEM_MAPPER);
 		m.put(XdmAttribute.class, XDM_ITEM_MAPPER); // Warning! Not implemented by current XCC library
