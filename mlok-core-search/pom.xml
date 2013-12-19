@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.anthavio.mlok</groupId>
+		<groupId>net.anthavio.mlok</groupId>
 		<artifactId>mlok</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
@@ -14,14 +14,20 @@
 	<dependencies>
 	
 		<dependency>
-			<groupId>com.anthavio.mlok</groupId>
+			<groupId>net.anthavio.mlok</groupId>
 			<artifactId>mlok-core</artifactId>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.jvnet.jaxb2_commons</groupId>
 			<artifactId>jaxb2-basics-runtime</artifactId>
-			<version>0.6.4</version>
+			<version>0.6.5</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.1.16</version>
 		</dependency>
 
 	</dependencies>
@@ -31,6 +37,9 @@
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
 				<artifactId>maven-jaxb21-plugin</artifactId>
+				<configuration>
+					<target>2.1</target>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>
@@ -41,7 +50,7 @@
 							<args>
 								<arg>-XtoString</arg>
 								<!--
-								<arg>-XtoString-toStringStrategyClass=com.anthavio.mlok.JsonToStringStrategy</arg>
+								<arg>-XtoString-toStringStrategyClass=net.anthavio.mlok.JsonToStringStrategy</arg>
 								-->
 							</args>
 						</configuration>

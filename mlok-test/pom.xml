@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.anthavio.mlok</groupId>
+		<groupId>net.anthavio.mlok</groupId>
 		<artifactId>mlok</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
@@ -31,8 +31,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.anthavio.maven</groupId>
-			<artifactId>jetty-deps-all</artifactId>
+			<groupId>net.anthavio.maven</groupId>
+			<artifactId>jetty-deps-core</artifactId>
 			<type>pom</type>
 		</dependency>
 
@@ -47,7 +47,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.anthavio</groupId>
+			<groupId>net.anthavio</groupId>
 			<artifactId>anthavio-spring</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<optional>true</optional>
